@@ -5,8 +5,10 @@ module Backsum
     class Dsl
       attr_accessor :instance
 
-      def initialize(&block)
+      def initialize(content = nil, filename = nil, lineno = nil, &block)
         self.instance = Project.new
+
+        instance_eval(content, filename, lineno) if content
         instance_eval(&block) if block
       end
       
