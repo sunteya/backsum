@@ -1,7 +1,13 @@
+require_relative 'server'
+
 module Backsum
   class Project
-    attr_accessor :name
-
+    attr_accessor :name, :servers
+    
+    def initialize
+      self.servers = []
+    end
+    
     class Dsl
       attr_accessor :instance
 
@@ -16,6 +22,10 @@ module Backsum
         self.instance.name = name
       end
       
+      def server(*args, &block)
+        server = Server::Dsl.new(*args, &block).instance
+        self.instance.servers << server
+      end
     end
   end
 end

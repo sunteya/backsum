@@ -18,5 +18,15 @@ describe Backsum::Project do
 
     dsl.instance.name.should == "ooxx"
   end
+  
+  it "can append a server" do
+    project = Backsum::Project::Dsl.new do
+      server "bstar-pro-uat", username: "root" do
+      end
+    end.instance
 
+    project.servers.size.should == 1
+    project.servers.first.should be_a Backsum::Server
+    
+  end
 end
