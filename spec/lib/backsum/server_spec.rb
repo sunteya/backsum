@@ -9,8 +9,6 @@ describe Backsum::Server do
       folder "/balm-games/shared"
     end.instance
 
-    puts server.folders
-    
     server.host.should == "localhost"
     server.username.should == "root"
     server.folders.size.should == 2
