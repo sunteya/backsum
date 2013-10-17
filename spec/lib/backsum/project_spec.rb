@@ -63,4 +63,8 @@ describe Backsum::Project do
     dsl.instance.backup_folder.should == "./backups/oox"
   end
 
+  it "can initial a Project::Dsl instance" do
+    project = Project.dsl
+    project.should be_a Project
+  end
 end

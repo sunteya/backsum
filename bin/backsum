@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/backsum/cli'
-Backsum::Cli.new(ARGV).execute
+Backsum::Cli.new.execute(ARGV)
