@@ -5,6 +5,8 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require "pry-nav"
+require 'simplecov'
+SimpleCov.start
 
 module Backsum; end
 include Backsum
