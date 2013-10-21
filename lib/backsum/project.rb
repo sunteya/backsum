@@ -12,10 +12,14 @@ module Backsum
       @backup_folder.respond_to?(:call) ? instance_eval(&@backup_folder) :  @backup_folder.to_s
     end
     
+    def self.dsl(*args, &block)
+      Dsl.new(*args, &block).instance
+    end
+    
     class Dsl
       attr_accessor :instance
 
-      def initialize(content = nil, filename = nil, lineno = nil, &block)
+      def initialize(content = nil, filename = nil, lineno = 0, &block)
         @filename = filename
         self.instance = Project.new
         self.apply_default_options
@@ -51,6 +55,9 @@ module Backsum
       def backup_folder(path)
         self.instance.backup_folder = path
       end
+    end
+    
+    def perform
     end
   end
 end
