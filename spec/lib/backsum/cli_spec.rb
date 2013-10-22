@@ -1,6 +1,5 @@
 require_relative '../../spec_helper'
 require "backsum/cli"
-require "backsum/version"
 
 describe Backsum::Cli do
   before(:each) do
@@ -8,6 +7,8 @@ describe Backsum::Cli do
     @fixture_dir = File.expand_path("../cli_spec", __FILE__)
     @cli = Cli.new
     @project = double("project")
+    
+    Project.should respond_to(:dsl)
     Project.stub(:dsl).with(any_args).and_return(@project)
   end
 

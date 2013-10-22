@@ -1,5 +1,5 @@
 require_relative '../../spec_helper'
-require "backsum/project"
+require "backsum/project_dsl"
 
 describe Backsum::Project do
   

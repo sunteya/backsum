@@ -1,7 +1,6 @@
 require 'optparse'
 require_relative "version"
-require_relative "project"
-require "pry-nav"
+require_relative "project_dsl"
 
 module Backsum
   class Cli
