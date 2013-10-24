@@ -26,14 +26,14 @@ describe Project do
   
   it "can copy to current backup folder and clean" do
     project = Project.new(backup_to: @fixture_dir.join("second_time"))
-    project.current_backup = "20130101T000000"
-    current_backup_dir = fixture_temp_dir("second_time", "20130101T000000")
+    current_backup_path = Pathname.new(project.current_backup.path)
+    @autoremove_files << current_backup_path
     project.servers = [ Server.new(host: "host1") ]
     
     project.build_target_backup_folder
     
-    current_backup_dir.should be_exist
-    current_backup_children = current_backup_dir.each_child.map { |p| p.basename.to_s }
+    current_backup_path.should be_exist
+    current_backup_children = current_backup_path.each_child.map { |p| p.basename.to_s }
     current_backup_children.should == [ "host1" ]
   end
   
@@ -49,7 +49,7 @@ describe Project do
       FileUtils.mkdir_p deploy_dir.join(datetime)
     end
     
-    project = Project.new(backup_to: deploy_dir, keep_days: 2, keep_weeks: 0, current_backup: "20131010T230000")
+    project = Project.new(backup_to: deploy_dir, keep_days: 2, keep_weeks: 0)
     project.cleanup_outdate_backups
     
     backup_names.each_pair do |backup_name, result|
@@ -69,7 +69,7 @@ describe Project do
       FileUtils.mkdir_p deploy_dir.join(datetime)
     end
     
-    project = Project.new(backup_to: deploy_dir, keep_days: 0, keep_weeks: 2, current_backup: "20131020T000000")
+    project = Project.new(backup_to: deploy_dir, keep_days: 0, keep_weeks: 2)
     project.cleanup_outdate_backups
     
     backup_names.each_pair do |backup_name, result|
