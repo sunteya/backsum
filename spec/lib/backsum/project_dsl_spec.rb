@@ -40,27 +40,27 @@ describe Backsum::Project do
     
     dsl.instance.keep_days.should == 3
     dsl.instance.keep_weeks.should == 4
-    dsl.instance.backup_folder.should == "./backups/bak_balm"
+    dsl.instance.backup_to.should == "./backups/bak_balm"
   end
   
   it "can override default backup properties" do
     dsl = Backsum::Project::Dsl.new do
       keep_days 5
       keep_weeks 8
-      backup_folder "./baks/foo"
+      backup_to "./baks/foo"
     end
     
     dsl.instance.keep_days.should == 5
     dsl.instance.keep_weeks.should == 8
-    dsl.instance.backup_folder.should == "./baks/foo"
+    dsl.instance.backup_to.should == "./baks/foo"
   end
   
-  it "can synchronize backup_folder with project name" do
+  it "can synchronize backup_to with project name" do
     dsl = Backsum::Project::Dsl.new  do
       name "oox"
     end
     
-    dsl.instance.backup_folder.should == "./backups/oox"
+    dsl.instance.backup_to.should == "./backups/oox"
   end
 
   it "can initial a Project::Dsl instance" do
