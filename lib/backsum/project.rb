@@ -1,10 +1,12 @@
 require_relative 'server'
 require "fileutils"
 require "cocaine"
+require "virtus"
 
 module Backsum
   class Project
     attr_accessor :name, :servers, :keep_days, :keep_weeks, :backup_to, :current_backup
+    LATEST_LINK_NAME = "Latest"
     
     def initialize(attributes = {})
       self.keep_days = 3
@@ -56,62 +58,81 @@ module Backsum
       
     end
     
-    def cleanup_outdate_backups
-      current_backup_folder = self.current_backup
-      # current_backup_date = DateTime.strptime(self.current_backup, "%Y%m%dT%H%M%S").to_date
-      
-      valid_folders = []
-      # valid_dates = {}
-      
-      day_groups = Dir[File.join(self.backup_to, "*")].map { |p| DateTime.strptime(File.basename(p), "%Y%m%dT%H%M%S") }.group_by do |datetime|
-        datetime.to_date
-      end
-      day_groups.sort.reverse.slice(0, self.keep_days).each do |group|
-        valid_folders << group[1].sort.last
-      end
-      
-      week_groups = Dir[File.join(self.backup_to, "*")].map { |p| DateTime.strptime(File.basename(p), "%Y%m%dT%H%M%S") }.group_by do |datetime|
-        datetime.cweek
-      end
-      
-      week_groups.sort.reverse.slice(0, self.keep_weeks).each do |group|
-        valid_folders << group[1].sort.last
-      end
-      
-      valid_folders = valid_folders.uniq.map {|datetime| datetime.strftime("%Y%m%dT%H%M%S") }
-      #binding.pry
-      Dir[File.join(self.backup_to, "*")].each do |path|
-        folder = File.basename(path)
-        FileUtils.rm_r(path) if !valid_folders.include? folder
-      end
-      
-      FileUtils.ln_s File.join(self.backup_to, current_backup_folder), File.join(self.backup_to, "Latest")
-      # self.keep_days.times do |i| 
-      #   valid_dates[current_backup_date.prev_day(i)] = []
-      # end
-      
-      # self.keep_weeks.times do |i|
-      #   valid_dates[(current_backup_date - current_backup_date.wday).prev_day(7 * i)] = []
-      # end
-      
-      # Dir[File.join(self.backup_to, "*")].each do |path|
-      #   next if File.symlink?(path)
-      #   folder = File.basename(path)
-      #   folder_backup_time = DateTime.strptime(folder, "%Y%m%dT%H%M%S")
-      #   valid_dates[folder_backup_time.to_date] << folder_backup_time if valid_dates.include? folder_backup_time.to_date
-      # end
-      
-      # valid_dates.each do |date, folders|
-      #   valid_folders << folders.max.strftime("%Y%m%dT%H%M%S") if !folders.empty?
-      # end
-      
-      # Dir[File.join(self.backup_to, "*")].each do |path|
-      #   folder = File.basename(path)
-      #   FileUtils.rm_r(path) if !valid_folders.include? folder
-      # end
-      
-      # FileUtils.ln_s File.join(self.backup_to, current_backup_folder), File.join(self.backup_to, "Latest")
+    def current_backup_name
+      self.current_backup
     end
     
+    def latest_backup_name
+      latest_path = File.join(self.backup_to, "Latest")
+      File.readlink(self.backup_to)
+    end
+    
+    def backups
+      self.backup_names.map { |backup_name| Backup.new(name: backup_name, base_dir: self.backup_to) }
+    end
+    
+    def backup_names
+      Dir[File.join(self.backup_to, "*")].map do |backup_path|
+        next if File.basename(backup_path) == LATEST_LINK_NAME
+        File.basename(backup_path)
+      end
+    end
+    
+    def cleanup_outdate_backups
+      backups = self.backups
+      
+      backups.each { |b| b.outdated = true }
+      
+      cweeks_mapping = backups.group_by(&:cweek)
+      cweeks_mapping.keys.sort.reverse.slice(0, self.keep_weeks).each do |cweek|
+        cweeks_mapping[cweek].sort.last.outdated = false
+      end
+      
+      days_mapping = backups.group_by(&:day)
+      days_mapping.keys.sort.reverse.slice(0, self.keep_days).each do |day|
+        days_mapping[day].sort.last.outdated = false
+      end
+      
+      
+      backups.each do |backup|
+        FileUtils.rm_rf(backup.path) if backup.outdated?
+      end
+      
+      # FileUtils.ln_s File.join(self.backup_to, self.current_backup), File.join(self.backup_to, "Latest")
+    end
+    
+    
+    class Backup
+      include Virtus.model
+      NAME_PATTERN = "%Y%m%dT%H%M%S"
+      
+      attribute :name
+      attribute :base_dir
+      attribute :outdated, Boolean
+      
+      def <=>(other)
+        self.backup_at <=> other.backup_at
+      end
+      
+      def backup_at
+        DateTime.strptime(self.name, NAME_PATTERN)
+      end
+      
+      def backup_at=(datetime)
+        self.name = datetime.strftime(NAME_PATTERN)
+      end
+      
+      def path
+        File.join(self.base_dir, self.name)
+      end
+      
+      def cweek
+        self.backup_at.cweek
+      end
+      
+      def day
+        self.backup_at.day
+      end
+    end
   end
 end
