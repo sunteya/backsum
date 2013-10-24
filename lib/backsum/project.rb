@@ -58,36 +58,59 @@ module Backsum
     
     def cleanup_outdate_backups
       current_backup_folder = self.current_backup
-      current_backup_date = DateTime.strptime(self.current_backup, "%Y%m%dT%H%M%S").to_date
+      # current_backup_date = DateTime.strptime(self.current_backup, "%Y%m%dT%H%M%S").to_date
       
       valid_folders = []
-      valid_dates = {}
+      # valid_dates = {}
       
-      self.keep_days.times do |i|
-        valid_dates[current_backup_date.prev_day(i)] = []
+      day_groups = Dir[File.join(self.backup_to, "*")].map { |p| DateTime.strptime(File.basename(p), "%Y%m%dT%H%M%S") }.group_by do |datetime|
+        datetime.to_date
+      end
+      day_groups.sort.reverse.slice(0, self.keep_days).each do |group|
+        valid_folders << group[1].sort.last
       end
       
-      self.keep_weeks.times do |i|
-        valid_dates[(current_backup_date - current_backup_date.wday).prev_day(7 * i)] = []
+      week_groups = Dir[File.join(self.backup_to, "*")].map { |p| DateTime.strptime(File.basename(p), "%Y%m%dT%H%M%S") }.group_by do |datetime|
+        datetime.cweek
       end
       
-      Dir[File.join(self.backup_to, "*")].each do |path|
-        next if File.symlink?(path)
-        folder = File.basename(path)
-        folder_backup_time = DateTime.strptime(folder, "%Y%m%dT%H%M%S")
-        valid_dates[folder_backup_time.to_date] << folder_backup_time if valid_dates.include? folder_backup_time.to_date
+      week_groups.sort.reverse.slice(0, self.keep_weeks).each do |group|
+        valid_folders << group[1].sort.last
       end
       
-      valid_dates.each do |date, folders|
-        valid_folders << folders.max.strftime("%Y%m%dT%H%M%S") if !folders.empty?
-      end
-      
+      valid_folders = valid_folders.uniq.map {|datetime| datetime.strftime("%Y%m%dT%H%M%S") }
+      #binding.pry
       Dir[File.join(self.backup_to, "*")].each do |path|
         folder = File.basename(path)
         FileUtils.rm_r(path) if !valid_folders.include? folder
       end
       
       FileUtils.ln_s File.join(self.backup_to, current_backup_folder), File.join(self.backup_to, "Latest")
+      # self.keep_days.times do |i| 
+      #   valid_dates[current_backup_date.prev_day(i)] = []
+      # end
+      
+      # self.keep_weeks.times do |i|
+      #   valid_dates[(current_backup_date - current_backup_date.wday).prev_day(7 * i)] = []
+      # end
+      
+      # Dir[File.join(self.backup_to, "*")].each do |path|
+      #   next if File.symlink?(path)
+      #   folder = File.basename(path)
+      #   folder_backup_time = DateTime.strptime(folder, "%Y%m%dT%H%M%S")
+      #   valid_dates[folder_backup_time.to_date] << folder_backup_time if valid_dates.include? folder_backup_time.to_date
+      # end
+      
+      # valid_dates.each do |date, folders|
+      #   valid_folders << folders.max.strftime("%Y%m%dT%H%M%S") if !folders.empty?
+      # end
+      
+      # Dir[File.join(self.backup_to, "*")].each do |path|
+      #   folder = File.basename(path)
+      #   FileUtils.rm_r(path) if !valid_folders.include? folder
+      # end
+      
+      # FileUtils.ln_s File.join(self.backup_to, current_backup_folder), File.join(self.backup_to, "Latest")
     end
     
   end
