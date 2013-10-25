@@ -18,9 +18,13 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "cocaine", "~> 0.5.2"
+  spec.add_runtime_dependency "virtus", "~> 1.0.0"
+
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "pry-nav"
   spec.add_development_dependency "rspec", "~> 2.14.1"
   spec.add_development_dependency "simplecov", "~> 0.7.1"
+  spec.add_development_dependency "guard-rspec", "~> 4.0.3"
 end
