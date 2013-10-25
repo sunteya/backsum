@@ -1,14 +1,19 @@
-require 'optparse'
 require_relative "version"
 require_relative "project_dsl"
 
+require 'optparse'
+require "virtus"
+
 module Backsum
   class Cli
-    attr_accessor :options, :files
+    include Virtus.model
     
-    def initialize
+    attribute :options, Hash
+    attribute :files, Array
+    
+    def initialize(*args)
       self.options = { projects_path: "./projects" }
-      self.files = []
+      super
     end
     
     def execute(argv = [])

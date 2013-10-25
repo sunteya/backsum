@@ -1,13 +1,12 @@
+require "virtus"
+
 module Backsum
   class Server
-    attr_accessor :host, :username, :folders
+    include Virtus.model
     
-    def initialize(attributes = {})
-      self.folders = {}
-      attributes.each_pair do |name, value|
-        send("#{name}=", value)
-      end
-    end
+    attribute :host
+    attribute :username
+    attribute :folders, Hash
     
     class Dsl
       attr_accessor :instance

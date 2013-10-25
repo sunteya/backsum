@@ -7,19 +7,22 @@ require "virtus"
 
 module Backsum
   class Project
-    attr_accessor :name, :servers, :keep_days, :keep_weeks, :backup_to
+    include Virtus.model
     LATEST_LINK_NAME = "Latest"
     
-    def initialize(attributes = {})
+    attribute :name
+    attribute :servers
+    attribute :keep_days
+    attribute :keep_weeks
+    attribute :backup_to
+    
+    def initialize(*args)
       self.keep_days = 3
       self.keep_weeks = 4
       self.name = "default"
       self.backup_to = Proc.new { "./backups/#{name}" }
       self.servers = []
-      
-      attributes.each_pair do |name, value|
-        send("#{name}=", value)
-      end
+      super
     end
     
     def backup_to
