@@ -52,6 +52,10 @@ module Backsum
     
     def sync_servers_data
       
+      self.servers.each do |server|
+        server.sync(self.current_backup.path)
+      end
+      
     end
     
     def current_backup
@@ -64,11 +68,6 @@ module Backsum
         real_path = File.readlink(path)
         Backup.new(name: File.basename(real_path), base_dir: self.backup_to)
       end
-    end
-    
-    def latest_backup_name
-      latest_path = File.join(self.backup_to, "Latest")
-      File.readlink(self.backup_to)
     end
     
     def backups
