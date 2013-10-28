@@ -51,11 +51,13 @@ module Backsum
     end
     
     def sync_servers_data
-      
       self.servers.each do |server|
         server.sync(self.current_backup.path)
       end
       
+      Dir.chdir self.backup_to do
+        FileUtils.ln_sf self.current_backup.name, LATEST_LINK_NAME
+      end
     end
     
     def current_backup
@@ -79,6 +81,10 @@ module Backsum
         next if File.basename(backup_path) == LATEST_LINK_NAME
         File.basename(backup_path)
       end
+    end
+    
+    def latest_link_name
+      LATEST_LINK_NAME
     end
     
     def cleanup_outdate_backups
