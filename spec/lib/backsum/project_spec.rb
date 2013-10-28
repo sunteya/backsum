@@ -73,7 +73,7 @@ describe Project do
     project.cleanup_outdate_backups
     
     backup_names.each_pair do |backup_name, result|
-      deploy_dir.join(backup_name).exist?.should eq(result), backup_name
+      deploy_dir.join(backup_name).exist?.should == result
     end
   end
   
