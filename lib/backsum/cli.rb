@@ -37,7 +37,7 @@ module Backsum
         opts.on("--all[=PATH]", ::String,
           "excute all the files. (default is '#{self.options[:projects_path]}')"
         ) do |path|
-          self.options[:projects_path] = path
+          self.options[:projects_path] = path if path
           @scan_projects_dir = true
         end
 
