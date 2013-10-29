@@ -1,3 +1,4 @@
+require_relative "../backsum"
 require_relative 'server'
 require_relative 'backup'
 require_relative 'shell'

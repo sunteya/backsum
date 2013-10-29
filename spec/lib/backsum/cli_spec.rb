@@ -28,6 +28,11 @@ describe Backsum::Cli do
     @stderr.string.should_not be_empty
   end
   
+  it "have verbose option" do
+    Backsum.should receive(:verbose=).with(true)
+    exit_code = run_command "--verbose"
+  end
+
   it "can't recieve unexists file" do
     exit_code = run_command "./unexists_file.rb"
     exit_code.should_not == 0

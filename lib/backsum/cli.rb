@@ -1,3 +1,4 @@
+require_relative "../backsum"
 require_relative "version"
 require_relative "project_dsl"
 
@@ -28,26 +29,30 @@ module Backsum
         opts.banner = "Usage: #{File.basename($0)} [options] action ..."
 
         opts.on("-V", "--version",
-          "Display the Backsum version, and exit."
+          "Display the Backsum version and exit."
         ) do
           stdout "Backsum v#{Backsum::VERSION}"
           exit 0
         end
 
         opts.on("--all[=PATH]", ::String,
-          "excute all the files. (default is '#{self.options[:projects_path]}')"
+          "excute all the files. default: '#{self.options[:projects_path]}'"
         ) do |path|
           self.options[:projects_path] = path if path
           @scan_projects_dir = true
         end
 
+        opts.on("-v", "--[no-]verbose", "increase verbosity. default: #{Backsum.verbose}") do |v|
+          Backsum.verbose = v
+        end
       end
+      
       if argv.empty?
         stderr "Please specify one action to execute."
         stderr option_parser.help
         exit 1
       end
-      
+
       option_parser.parse!(argv)
       
       if @scan_projects_dir
@@ -68,6 +73,7 @@ module Backsum
       project = Backsum::Project.dsl(File.read(file), file)
       project.perform
     end
+
   protected
     def stdout(*args)
       $stdout.puts(*args)

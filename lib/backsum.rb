@@ -1,5 +1,9 @@
 require "backsum/version"
+require_relative "backsum/version"
+require "active_support/core_ext/module"
 
 module Backsum
-  # Your code goes here...
+  mattr_accessor :verbose
+  @@verbose = false
+
 end
