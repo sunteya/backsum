@@ -73,8 +73,20 @@ describe Project do
     project.cleanup_outdate_backups
     
     backup_names.each_pair do |backup_name, result|
-      deploy_dir.join(backup_name).exist?.should eq(result), backup_name
+      deploy_dir.join(backup_name).exist?.should == result
     end
+  end
+  
+  it "can regenerate sysmbol link after sync server" do
+    third_backup_dir = fixture_temp_dir("third_time")
+    backup_name = "20131020T153839"
+    project = Project.new(backup_to: @fixture_dir.join("third_time"))
+    
+    FileUtils.mkdir_p File.join(project.backup_to, backup_name)
+    project.current_backup.name = backup_name
+    project.sync_servers_data
+    
+    File.readlink(File.join(project.backup_to, project.latest_link_name)).should == backup_name
   end
   
   def fixture_temp_dir(*basenames)

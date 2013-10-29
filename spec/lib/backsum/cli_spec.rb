@@ -44,6 +44,9 @@ describe Backsum::Cli do
   
 
   it "the argument '--all' have default value" do
+    Dir.chdir(@fixture_dir) do
+      exit_code = run_command "--all"
+    end
     @cli.options[:projects_path].should == "./projects"
   end
 

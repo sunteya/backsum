@@ -51,7 +51,14 @@ module Backsum
     end
     
     def sync_servers_data
+      self.servers.each do |server|
+        server.sync(self.current_backup.path)
+      end
       
+      Dir.chdir self.backup_to do
+        FileUtils.rm_rf LATEST_LINK_NAME
+        FileUtils.ln_sf self.current_backup.name, LATEST_LINK_NAME
+      end
     end
     
     def current_backup
@@ -66,11 +73,6 @@ module Backsum
       end
     end
     
-    def latest_backup_name
-      latest_path = File.join(self.backup_to, "Latest")
-      File.readlink(self.backup_to)
-    end
-    
     def backups
       self.backup_names.map { |backup_name| Backup.new(name: backup_name, base_dir: self.backup_to) }
     end
@@ -79,7 +81,11 @@ module Backsum
       Dir[File.join(self.backup_to, "*")].map do |backup_path|
         next if File.basename(backup_path) == LATEST_LINK_NAME
         File.basename(backup_path)
-      end
+      end.compact
+    end
+    
+    def latest_link_name
+      LATEST_LINK_NAME
     end
     
     def cleanup_outdate_backups
