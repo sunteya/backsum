@@ -1,6 +1,8 @@
+require_relative "../backsum"
+require_relative 'shell'
+
 require "virtus"
 require "fileutils"
-require "cocaine"
 require "shellwords"
 
 module Backsum
@@ -26,7 +28,9 @@ module Backsum
     def execute_rsync(backup_path, connect, source, options)
       arguments = [ "--archive", "--delete" ]
       target_path = File.join(backup_path, self.host)
-      
+
+      arguments << "--verbose" if Backsum.verbose
+
       if options[:as]
         target_path = File.join(target_path, options[:as])
       else
@@ -47,9 +51,8 @@ module Backsum
       
       arguments << target_path
       
-      copy_command = Cocaine::CommandLine.new("rsync", arguments.map {|arg| shell_param_escape(arg) }.join(' '))
+      copy_command = Shell.new("rsync", arguments.map {|arg| shell_param_escape(arg) }.join(' '))
       copy_command.run
-      
     end
     
     def shell_param_escape(str)
