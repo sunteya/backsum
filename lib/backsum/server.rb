@@ -1,6 +1,7 @@
+require_relative 'shell'
+
 require "virtus"
 require "fileutils"
-require "cocaine"
 require "shellwords"
 
 module Backsum
@@ -47,9 +48,8 @@ module Backsum
       
       arguments << target_path
       
-      copy_command = Cocaine::CommandLine.new("rsync", arguments.map {|arg| shell_param_escape(arg) }.join(' '))
+      copy_command = Shell.new("rsync", arguments.map {|arg| shell_param_escape(arg) }.join(' '))
       copy_command.run
-      
     end
     
     def shell_param_escape(str)

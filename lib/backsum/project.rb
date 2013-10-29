@@ -1,8 +1,8 @@
 require_relative 'server'
 require_relative 'backup'
+require_relative 'shell'
 
 require "fileutils"
-require "cocaine"
 require "virtus"
 
 module Backsum
@@ -39,7 +39,7 @@ module Backsum
       FileUtils.mkdir_p(self.backup_to)
       
       if self.latest_backup
-        copy_command = Cocaine::CommandLine.new("cp", "-r -l :source :target")
+        copy_command = Shell.new("cp", "-R -l :source :target")
         copy_command.run(source: self.latest_backup.path, target: self.current_backup.path)
       else
         FileUtils.mkdir_p(self.current_backup.path)
