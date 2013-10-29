@@ -1,6 +1,6 @@
 # Backsum
 
-TODO: Write a gem description
+backsum is unix base the file system backup tools, it will incremental backup remote file to local storage.
 
 ## Installation
 

@@ -6,11 +6,11 @@ require 'backsum/version'
 Gem::Specification.new do |spec|
   spec.name          = "backsum"
   spec.version       = Backsum::VERSION
-  spec.authors       = ["sunteya"]
-  spec.email         = ["sunteya@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.authors       = [ "sunteya", "jyfcrw" ]
+  spec.email         = [ "sunteya@gmail.com", "jyfcrw@gmail.com" ]
+  spec.description   = %q{backsum is unix base the file system backup tools, it will incremental backup remote file to local storage.}
+  spec.summary       = %q{remote incremental backup tools}
+  spec.homepage      = "https://github.com/sunteya/backsum"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
