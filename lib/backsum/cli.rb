@@ -17,6 +17,8 @@ module Backsum
     def execute(argv = [])
       option_parser!(argv)
 
+      Backsum.logger.level = :debug if ::Backsum.verbose
+
       if self.action
         send self.action
       else
@@ -38,8 +40,8 @@ module Backsum
           self.action = :perform_by_dir
         end
 
-        opts.on("-v", "--[no-]verbose", "increase verbosity. default: #{Backsum.verbose}") do |v|
-          Backsum.verbose = v
+        opts.on("-v", "--[no-]verbose", "increase verbosity. default: #{Backsum.verbose}") do |value|
+          Backsum.verbose = value
         end
       end
 

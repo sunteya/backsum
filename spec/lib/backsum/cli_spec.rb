@@ -29,8 +29,9 @@ describe Backsum::Cli do
   end
   
   it "have verbose option" do
-    Backsum.should receive(:verbose=).with(true)
     exit_code = run_command "--verbose"
+    Backsum.verbose.should == true
+    Backsum.logger.level.should == Logging.level_num(:debug)
   end
 
   it "can't recieve unexists file" do

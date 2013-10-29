@@ -14,7 +14,7 @@ describe Server do
       FileUtils.rm_rf(file) if File.exist?(file)
     end
   end
-  
+
   it "can create instance by dsl block" do
     server = Server::Dsl.new "localhost", username: "root" do
       folder "/balm/shared", excluded: [ "logs" ]

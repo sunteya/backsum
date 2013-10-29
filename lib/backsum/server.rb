@@ -28,7 +28,9 @@ module Backsum
     def execute_rsync(backup_path, connect, source, options)
       arguments = [ "--archive", "--delete" ]
       target_path = File.join(backup_path, self.host)
-      
+
+      arguments << "--verbose" if Backsum.verbose
+
       if options[:as]
         target_path = File.join(target_path, options[:as])
       else
