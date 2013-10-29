@@ -7,74 +7,83 @@ require "virtus"
 
 module Backsum
   class Cli
-    include Virtus.model
-    
-    attribute :options, Hash
-    attribute :files, Array
-    
+    attr_accessor :options, :action
+
     def initialize(*args)
       self.options = { projects_path: "./projects" }
-      super
+      self.action = nil
     end
     
     def execute(argv = [])
       option_parser!(argv)
-      self.files.each { |file| perform(file) }
+
+      if self.action
+        send self.action
+      else
+        self.show_usage
+        exit 1
+      end
     end
     
     def option_parser!(argv)
-      
-      option_parser ||= OptionParser.new do |opts|
-
+      @option_parser ||= OptionParser.new do |opts|
         opts.banner = "Usage: #{File.basename($0)} [options] action ..."
 
-        opts.on("-V", "--version",
-          "Display the Backsum version and exit."
-        ) do
-          stdout "Backsum v#{Backsum::VERSION}"
-          exit 0
+        opts.on("-V", "--version", "Display the Backsum version and exit.") do
+          self.action = :show_version
         end
 
-        opts.on("--all[=PATH]", ::String,
-          "excute all the files. default: '#{self.options[:projects_path]}'"
-        ) do |path|
+        opts.on("--all[=PATH]", "excute all the files. default: '#{self.options[:projects_path]}'") do |path|
           self.options[:projects_path] = path if path
-          @scan_projects_dir = true
+          self.action = :perform_by_dir
         end
 
         opts.on("-v", "--[no-]verbose", "increase verbosity. default: #{Backsum.verbose}") do |v|
           Backsum.verbose = v
         end
       end
-      
-      if argv.empty?
-        stderr "Please specify one action to execute."
-        stderr option_parser.help
-        exit 1
-      end
 
-      option_parser.parse!(argv)
-      
-      if @scan_projects_dir
-        self.files = Dir[File.join(self.options[:projects_path], '*.rb')]
-      else
-        self.files = argv if self.files.empty?
-      end
+      @option_parser.parse!(argv)
 
-      self.files.each do |file|
+      if !self.action && argv.any?
+        self.action = :perform_by_inputs
+        @input_files = argv
+      end
+    end
+    
+    def show_usage
+      stderr "Please specify one action to execute."
+      stderr @option_parser.help
+    end
+
+    def show_version
+      stdout "Backsum v#{Backsum::VERSION}"
+    end
+
+    def perform_by_dir
+      files = Dir[File.join(self.options[:projects_path], '*.rb')]
+      perform_files(files)
+    end
+
+    def perform_by_inputs
+      perform_files(@input_files)
+    end
+
+  protected
+    def perform_files(files)
+      files.each do |file|
         if !File.exist?(file)
           stderr "#{file} is not exist!"
           exit 1
         end
       end
-    end
-    
-    def perform(file)
-      project = Backsum::Project.dsl(File.read(file), file)
-      project.perform
+
+      files.each do |file|
+        project = Backsum::Project.dsl(File.read(file), file)
+        project.perform
+      end
     end
 
-  protected
     def stdout(*args)
       $stdout.puts(*args)
     end
