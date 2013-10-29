@@ -18,7 +18,29 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+First, you have to configure your backup tasks.
+
+    $ mkdir ./projects
+    $ vi ./projects/one_task.rb
+
+Create a ruby file to configure your first task.
+
+    # one_task.rb
+    
+    name "one_task_name"
+    
+    server "remotehost", username: "www-data" do
+      folder "/var/www/demo/apps/one_web/shared"
+      folder "/var/www/demo/apps/two_web/shared", excluded: ["logs", "assets"], as: "two_web_backup"
+    end
+    
+    server "localhost", local: true do
+      folder "/foo", excluded: ["bar"], as: "local_backup"
+    end
+
+Here’s how you run a backup server.
+
+    $ backsum --all
 
 ## Contributing
 
