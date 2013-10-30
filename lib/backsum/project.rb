@@ -38,22 +38,14 @@ module Backsum
     
     def build_target_backup_folder
       FileUtils.mkdir_p(self.backup_to)
-      
-      if self.latest_backup
-        copy_command = Shell.new("cp", "-R -l :source :target")
-        copy_command.run(source: self.latest_backup.path, target: self.current_backup.path)
-      else
-        FileUtils.mkdir_p(self.current_backup.path)
-      end
-      
-      Dir[File.join(self.current_backup.path, "*")].each do |path|
-        FileUtils.rm_rf path if !self.servers.any? {|s| s.host == File.basename(path) }
-      end
+      FileUtils.mkdir_p(self.current_backup.path) if !self.latest_backup
     end
     
     def sync_servers_data
+      lastest_backup_path = self.latest_backup.path  if self.latest_backup
+      
       self.servers.each do |server|
-        server.sync(self.current_backup.path)
+        server.sync self.current_backup.path, lastest_backup_path
       end
       
       Dir.chdir self.backup_to do
