@@ -24,19 +24,6 @@ describe Project do
     first_backup_dir.should be_exist
   end
   
-  it "can copy to current backup folder and clean" do
-    project = Project.new(backup_to: @fixture_dir.join("second_time"))
-    current_backup_path = Pathname.new(project.current_backup.path)
-    @autoremove_files << current_backup_path
-    project.servers = [ Server.new(host: "host1") ]
-    
-    project.build_target_backup_folder
-    
-    current_backup_path.should be_exist
-    current_backup_children = current_backup_path.each_child.map { |p| p.basename.to_s }
-    current_backup_children.should == [ "host1" ]
-  end
-  
   it "can cleanup outdated daily backups" do
     deploy_dir = fixture_temp_dir("daliy_cleanup")
     backup_names = {
