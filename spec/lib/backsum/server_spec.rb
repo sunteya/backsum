@@ -43,16 +43,17 @@ describe Server do
   end
   
   it "can sync folder from localhost incrementally" do
-    source_dir = @fixture_dir.join("source_increment/")
-    target_dir = @fixture_dir.join("target_increment/")
-    linkdest_dir = @fixture_dir.join("target_increment_latest/")
+    source_dir = @fixture_dir.join("source_increment")
+    target_dir = @fixture_dir.join("target_increment")
+    linkdest_dir = @fixture_dir.join("target_increment_latest")
+    linkdest_path = "./spec/lib/backsum/server_spec/target_increment_latest"
     @autoremove_files << target_dir.to_s
     
     server = Server::Dsl.new "localhost", local: true do
       folder source_dir.to_s , as: "folder1"
     end.instance
     
-    server.sync target_dir.to_s, linkdest_dir.to_s
+    server.sync target_dir.to_s, linkdest_path
     
     target_dir.join(server.host, "folder1", "file1").should be_exist
     File.identical?(target_dir.join(server.host, "folder1", "file1"), linkdest_dir.join(server.host, "folder1", "file1")).should be_true

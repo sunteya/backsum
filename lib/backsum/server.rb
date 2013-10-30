@@ -31,7 +31,8 @@ module Backsum
       arguments << "--verbose" if Backsum.verbose
 
       if linkdest_path
-        linkdest_dir = File.join(linkdest_path, self.host, options[:as] || source, "/")
+        linkdest_abosulte_path = File.absolute_path(linkdest_path) # rsync link dest must be abosulte path.
+        linkdest_dir = File.join(linkdest_abosulte_path, self.host, options[:as], "/")
         arguments << "--link-dest=#{linkdest_dir}" if File.exists?(linkdest_dir)
       end
 
@@ -47,6 +48,7 @@ module Backsum
         arguments << "--exclude=#{pattern}"
       end
       
+      source = File.join(source, "/") if File.directory?(source)
       if connect
         arguments << "#{connect}:#{source}"
       else
