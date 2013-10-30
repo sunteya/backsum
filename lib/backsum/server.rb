@@ -32,7 +32,7 @@ module Backsum
 
       if linkdest_path
         linkdest_abosulte_path = File.absolute_path(linkdest_path) # rsync link dest must be abosulte path.
-        linkdest_dir = File.join(linkdest_abosulte_path, self.host, options[:as], "/")
+        linkdest_dir = File.join([linkdest_abosulte_path, self.host, options[:as], "/"].compact)
         arguments << "--link-dest=#{linkdest_dir}" if File.exists?(linkdest_dir)
       end
 

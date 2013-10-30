@@ -50,7 +50,7 @@ describe Server do
     @autoremove_files << target_dir.to_s
     
     server = Server::Dsl.new "localhost", local: true do
-      folder source_dir.to_s , as: "folder1"
+      folder source_dir.to_s #, as: "folder1"
     end.instance
     
     server.sync target_dir.to_s, linkdest_path
