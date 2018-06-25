@@ -1,0 +1,5 @@
+#!/bin/bash
+set -x
+DATA=$(realpath $1)
+shift
+DATA=$DATA docker-compose run --rm backsum "$@"

@@ -1,0 +1,13 @@
+version: "3"
+services:
+  backsum:
+    image: sunteya/backsum:latest
+    volumes:
+      - ~/.ssh:/root/.ssh
+      - $DATA:/data/
+    networks:
+      - bridge
+
+networks:
+  bridge:
+    external: true
