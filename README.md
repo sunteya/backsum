@@ -24,7 +24,9 @@ In docker container, you can should backup.sh script
     vi backup.sh
 
     #!/usr/bin/env bash
+    set -x
     backsum SERVER_HOST:/etc :/root :/usr/local
+    cleanup 5 # keep last 5 backups
 
 Finally, you can backup you server in container.
 
