@@ -30,7 +30,6 @@ rsync_args+=("$@")
 rsync_args+=($curr)
 
 # Try twice to fix symbolic link error
-rsync ${rsync_args[@]} || rsync ${rsync_args[@]}
+rsync "${rsync_args[@]}" || rsync "${rsync_args[@]}"
 
 mv $curr $basename
-
