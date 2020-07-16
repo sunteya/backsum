@@ -25,8 +25,8 @@ In docker container, you can should backup.sh script
 
     #!/usr/bin/env bash
     set -x
-    backsum SERVER_HOST:/etc :/root :/usr/local
-    cleanup 5 # keep last 5 backups
+    backsum perform SERVER_HOST:/etc :/root :/usr/local
+    cleanup cleanup 5 # keep last 5 backups
 
 Finally, you can backup you server in container.
 
@@ -35,6 +35,14 @@ Finally, you can backup you server in container.
 Or, run it on you machine.
 
     ./start-backsum PROJECT_NAME ./backup.sh
+
+
+## Advanced
+
+  * The program will reuse the latest backup data by "rsync hardlink", for reduce disk usage.
+  * If you want to use "APFS clone" or "BTRFS reflink" instead of "rsync hardlink".
+  * You need to create the "MIRROR" directory by yourself before performing the backup.
+  * For details, please refer to "contrib/mirror-backsum"
 
 
 ## Contributing

@@ -1,5 +1,14 @@
 #!/bin/bash
 set -x
 DATA=$(realpath $1)
-shift
-DATA=$DATA docker-compose run --rm backsum "$@"
+shift || true
+
+
+
+if [ "$#" == "0" ]; then
+  args="fish -l"
+else
+  args="$@"
+fi
+
+docker run -it --rm -v $DATA:/data/ -v ~/.ssh:/root/.ssh:ro sunteya/backsum $args

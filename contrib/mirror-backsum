@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -x
+
+DATA=$(realpath $1)
+
+current=$(ls -r "$DATA" | grep -E '^[[:digit:]]{8}-?' | head -1)
+
+if [ ! -e "$DATA/$current" ]; then
+  exit 0
+fi
+
+if [ "$(uname)" == "Darwin" ]; then
+  cp -R -p -P -c "$DATA/$current" "$DATA/MIRROR"
+else
+  cp -R -p -P --reflink "$DATA/$current" "$DATA/MIRROR"
+fi
