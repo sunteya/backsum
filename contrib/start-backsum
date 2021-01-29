@@ -11,4 +11,4 @@ else
   args="$@"
 fi
 
-docker run -it --rm -v $DATA:/data/ -v ~/.ssh:/root/.ssh:ro sunteya/backsum $args
+docker run -it --rm --network host -v /etc/localtime:/etc/localtime -v $DATA:/data/ -v ~/.ssh:/root/.ssh:ro sunteya/backsum $args

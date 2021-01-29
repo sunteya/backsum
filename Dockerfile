@@ -2,7 +2,7 @@ FROM ubuntu:rolling
 
 RUN rm /etc/dpkg/dpkg.cfg.d/excludes
 
-RUN apt-get update # 2020-07-16-1
+RUN apt-get update # 2021-01-29
 # RUN apt-get -y install ubuntu-core-libs
 RUN apt-get -y install vim
 RUN apt-get -y install rsync
