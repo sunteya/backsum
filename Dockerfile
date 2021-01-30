@@ -19,8 +19,11 @@ RUN apt-get -y install fish
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN mkdir -p /data
 ADD backsum.sh /bin/backsum
 
+RUN mkdir -p /data
 WORKDIR /data
-CMD ["/bin/bash", "-l"]
+
+ADD entrypoint.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "/bin/bash", "-l" ]

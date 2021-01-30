@@ -4,11 +4,10 @@ DATA=$(realpath $1)
 shift || true
 
 
-
 if [ "$#" == "0" ]; then
   args="fish -l"
 else
   args="$@"
 fi
 
-docker run -it --rm --network host -v /etc/localtime:/etc/localtime -v $DATA:/data/ -v ~/.ssh:/root/.ssh:ro sunteya/backsum $args
+docker run -it --rm --network host -v /etc/localtime:/etc/localtime -v $DATA:/data/:Z -v ~/.ssh:/mnt/user/.ssh:ro sunteya/backsum $args

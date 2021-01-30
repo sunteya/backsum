@@ -52,21 +52,20 @@ perform(){
     rm -rf "$backup_dir/$name_processing"
     mv "$backup_dir/MIRROR" "$backup_dir/$name_processing"
   else
-    name_previous=$(list | head -1)
+    name_previous=$(list | grep -v '\.processing$' | head -1)
   fi
 
-
-  rsync_args=(--archive --verbose --delete --relative --owner --group --perms)
+  rsync_opts=(--archive --verbose --delete --relative)
   if [ -n "$name_previous" ]; then
     previous_path=$(realpath "$backup_dir/$name_previous")
-    rsync_args+=("--link-dest=$previous_path")
+    rsync_opts+=("--link-dest=$previous_path")
   fi
 
-  rsync_args+=("$@")
+  rsync_args=("$@")
   rsync_args+=("$backup_dir/$name_processing")
 
   # Try twice to fix symbolic link error
-  rsync "${rsync_args[@]}" || rsync "${rsync_args[@]}"
+  rsync "${rsync_opts[@]}" "${rsync_args[@]}" || rsync "${rsync_opts[@]}" --no-perms "${rsync_args[@]}"
 
   mv "$backup_dir/$name_processing" "$backup_dir/$name"
   ls -r "$backup_dir" | grep -E '^[[:digit:]]{8}\.processing$' | xargs rm -rf
